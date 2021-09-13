@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Lecture 1</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="../reveal.js/dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 32px;
+        }
+
+        #compareTable {
+            font-size: 30px;
+        }
+
+        .source {
+            font-size: 20px;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .reveal .row {
+            display: flex;
+            /*justify-content: space-between;*/
+            /*justify-content: center;*/
+            /*align-content: center;*/
+        }
+
+        .row > * {
+            height: 40vh;
+            flex-grow: 1;
+        }
+
+        .row img {
+            max-height: 100%;
+            min-width: 100%;
+            object-fit: cover;
+            vertical-align: center;
+        }
+
+        ul.row {
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>
+                Introduction to databases
+            </h1>
+            <h2>MongoDB</h2>
+        </section>
+        <section>
+            <h2>
+                What is the course about
+            </h2>
+            <ul>
+                <li class="fragment">What is Database</li>
+                <li class="fragment">
+                    MongoDB Basics
+                    <ul>
+                        <li class="fragment">Installation and launch</li>
+                        <li class="fragment">Queries</li>
+                        <li class="fragment">Aggregations</li>
+                        <li class="fragment">Indexing</li>
+                        <li class="fragment">Replication\Sharding</li>
+                    </ul>
+                </li>
+                <li class="fragment">Designing data models</li>
+                <li class="fragment">MongoDB Compass</li>
+                <li class="fragment">Working with backups</li>
+                <li class="fragment">Working with MongoDB in Python\JavaScript</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Organizational issues</h2>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Why do we need databases 🤔</h2>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Why do we need databases 🤔</h2>
+            <ul>
+                <li class="fragment">Databases can store very large numbers of records efficiently (they take up little
+                    space).
+                </li>
+                <li class="fragment">Easy to perform CRUD operations (create, read, update, delete)</li>
+                <li class="fragment">Fast and efficient searching</li>
+                <li class="fragment">Accurate</li>
+                <li class="fragment">Data integrity</li>
+                <li class="fragment">Multi-access</li>
+                <li class="fragment">Replication</li>
+                <li class="fragment">Security</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is database</h2>
+            <p class="fragment">A program that allows you to store and process information in a structured way.</p>
+        </section>
+
+        <section>
+            <h2>Database types</h2>
+            <p>Relational DBMS vs non-relational</p>
+            <p>SQL vs NoSQL</p>
+        </section>
+
+        <section>
+            <h2>SQL</h2>
+            <ul>
+                <li>Stands for Structured Query Language</li>
+                <li>Lets you access and manipulate databases</li>
+                <li>Lets you perform CRUD operations</li>
+                <li>Although SQL is an ANSI/ISO standard, there are different versions of the SQL language.</li>
+            </ul>
+            <pre><code data-trim data-noescape>
+                SELECT CustomerName, City FROM Customers;
+
+                UPDATE Customers
+                SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+                WHERE CustomerID = 1;
+            </code></pre>
+        </section>
+
+        <section>
+            <h2>How is data organized with SQL</h2>
+            <img src="images/relational-dbms-model.webp" alt="Tables">
+        </section>
+
+        <section>
+            <h2>NoSQL</h2>
+            <ul>
+                <li>Stands for "non SQL" or "not only SQL"</li>
+                <li>NoSQL databases emerged in the late 2000s (while SQL was developed in the early 70s)</li>
+                <li>Term "NoSQL" typically refers to any non-relational database</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Why NoSQL appeared</h2>
+            <ul>
+                <li class="fragment">More users are going online</li>
+                <li class="fragment">Meeting UX requirements with consistent high performance</li>
+                <li class="fragment">24/7 availability</li>
+                <li class="fragment">Access from anywhere in the world</li>
+                <li class="fragment">Reducing the cost of storage</li>
+                <li class="fragment">Big data is getting bigger</li>
+                <li class="fragment">Applications are moving to the cloud</li>
+                <li class="fragment">The world has gone mobile</li>
+                <li class="fragment">Propagation of agile methodology</li>
+            </ul>
+            <p class="source">Source: <a href="https://www.couchbase.com/resources/why-nosql">https://www.couchbase.com/resources/why-nosql</a>
+            </p>
+        </section>
+
+        <section>
+            <h2>Relational vs non-relational DBMS</h2>
+            <table id="compareTable">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Relational</th>
+                    <th>Non-relational</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Data storage model</td>
+                    <td>Tables</td>
+                    <td>Documents, key-value, column, graph</td>
+                </tr>
+                <tr>
+                    <td>Schemas</td>
+                    <td>Rigid</td>
+                    <td>Flexible</td>
+                </tr>
+                <tr>
+                    <td>Scaling</td>
+                    <td>Vertical (scale-up with a larger server)</td>
+                    <td>Horizontal (scale-out across commodity servers)
+                    </td>
+                </tr>
+                <tr>
+                    <td>ACID Transactions</td>
+                    <td>Supported</td>
+                    <td>Most do not support multi-record ACID transactions</td>
+                </tr>
+                <tr>
+                    <td>Joins</td>
+                    <td>Typically required</td>
+                    <td>Typically not required</td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="source">Source: <a href="https://www.mongodb.com/nosql-explained/nosql-vs-sql">https://www.mongodb.com/nosql-explained/nosql-vs-sql</a>
+            </p>
+        </section>
+
+        <section>
+            <h2>Reasons to use SQL database</h2>
+            <ul>
+                <li>Your data is structured and unchanging</li>
+                <li>You want to ensure ACID compliance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Reasons to use a NoSQL database</h2>
+            <ul>
+                <li>To store large volumes of data that might have little to no structure</li>
+                <li>To speed development</li>
+                <li>To boost horizontal scalability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Relational DBMS examples</h2>
+            <ul class="row">
+                <li><img class="fragment" width="20%" src="images/postgresql.png" alt="PostgreSQL logo"></li>
+                <li><img class="fragment bg-white" width="20%" src="images/mysql.png" alt="MySQL logo"></li>
+                <li><img class="fragment" width="20%" src="images/mssql.png" alt="MS SQL server logo"></li>
+                <li><img class="fragment bg-white" width="20%" src="images/sqlite.png" alt="SQLite logo"></li>
+            </ul>
+        </section>
+
+        <section>
+            <section>
+                <h2>Non-relational DBMS examples</h2>
+            </section>
+            <section>
+                <h3>Redis</h3>
+                <ul>
+                    <li>Remote Dictionary Server</li>
+                    <li>key-value</li>
+                    <li>strings, hashes, lists, sets, sorted sets with range queries, bitmaps, and so on..</li>
+                    <li>caching, message queue, counters, ML, and so on</li>
+                </ul>
+                <img class="r-stretch" src="images/redis-site.png" alt="Redis homepage">
+            </section>
+
+            <section>
+                <h3>Neo4j</h3>
+                <ul>
+                    <li>graph</li>
+                    <li>Recommendation engine, social media and social network graphs, fraud detection, ...</li>
+                </ul>
+                <img class="r-stretch" src="images/neo4j-site.png" alt="Neo4j homepage">
+            </section>
+
+            <section>
+                <h3>InfluxDB</h3>
+                <ul>
+                    <li>time-sires</li>
+                    <li>IoT, analytics, monitoring, ...</li>
+                </ul>
+                <img class="r-stretch" src="images/influx-site.png" alt="InfluxDB homepage">
+            </section>
+        </section>
+
+        <section>
+            <img src="images/mongodb.png" alt="MongoDB logo">
+        </section>
+
+        <section>
+            <h2>MongoDB features</h2>
+
+            <ul>
+                <li class="fragment">Document-oriented</li>
+                <li class="fragment">High performance</li>
+                <li class="fragment">Schema-less</li>
+                <li class="fragment">Aggregations</li>
+                <li class="fragment">Horizontal scaling</li>
+                <li class="fragment">High availability</li>
+                <li class="fragment">GridFS</li>
+                <li class="fragment">BSON (Binary JavaScript Object Notation)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is document-oriented</h2>
+            <p>A document-oriented database is a specific kind of database that works on the principle of dealing with
+                'documents’ rather than strictly defined tables of information.</p>
+        </section>
+
+        <section>
+            <img src="images/relational_vs_mdb.png" alt="Relational DBMS vs MongoDB">
+        </section>
+
+        <section>
+            <h2>Scalability</h2>
+            <p>How many requests can we process</p>
+            <p>How quickly can we adapt to the (high)load</p>
+        </section>
+
+        <section>
+            <h2>Vertical scaling vs horizontal</h2>
+            <img src="images/horizontal-vs-vertical-scaling.webp" alt="Horizontal vs Vertical scaling">
+        </section>
+
+        <section>
+            <h2>MongoDB replication</h2>
+            <p>A replica set in MongoDB is a group of mongod processes that maintain the same data set.</p>
+        </section>
+
+        <section>
+            <img src="images/replica-set-read-preference-secondary.bakedsvg.svg" alt="MongoDB replicaset visualized">
+        </section>
+
+        <section>
+            <img class="bg-white" src="images/replica-set-trigger-election.bakedsvg.svg"
+                 alt="MongoDB replicaset elections visualized">
+        </section>
+
+        <section>
+            <h2>Why we will use MongoDB</h2>
+            <ul>
+                <li>MongoDB can cover almost all RDBMS cases</li>
+                <li>Easy to use and develop</li>
+                <li>BigData-ready</li>
+                <li>Aggregations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MongoDB disadvantages and limitation</h2>
+            <ul>
+                <li>Not the best solution for applications with complex transactions (limited transaction support)</li>
+                <li>Usually requires more disk space</li>
+                <li>By design, joined collections tend to be much slower than in relational DB</li>
+                <li>Being schema-less can sometimes lead to bad data modeling designs.</li>
+            </ul>
+        </section>
+    </div>
+
+</div>
+
+<script src="../reveal.js/dist/reveal.js"></script>
+<script src="../reveal.js/plugin/zoom/zoom.js"></script>
+<script src="../reveal.js/plugin/notes/notes.js"></script>
+<script src="../reveal.js/plugin/search/search.js"></script>
+<script src="../reveal.js/plugin/markdown/markdown.js"></script>
+<script src="../reveal.js/plugin/highlight/highlight.js"></script>
+<script>
+
+    // Also available as an ES module, see:
+    // https://revealjs.com/initialization/
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        slideNumber: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight]
+    });
+
+</script>
+
+</body>
+</html>
