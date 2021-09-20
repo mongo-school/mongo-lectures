@@ -1,0 +1,15 @@
+version: "3.4"
+
+services:
+  mongodb:
+    image: mongo:5.0.2
+    volumes:
+      - mongodata:/data/db
+      - mongo-config:/data/configdb
+      - ./assets:/assets # directory with asset files, to be imported to MongoDB with mongoimport command
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodata:
+  mongo-config:
