@@ -223,6 +223,7 @@ With MongoDB compass you can use the same filters and options as in `mongosh`:
 ### Embedded mongosh
 
 In MongoDB Compass you can find embedded `mongosh` by clicking on the bottom tab:
+
 ![img_5.png](img_5.png)
 
 This is full-featured MongoDB Shell where you can execute any queries.
