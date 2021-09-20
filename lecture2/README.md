@@ -182,6 +182,8 @@ Import JSON file with Docker Compose
 docker-compose exec mongodb mongoimport -c test_collection -d test_db_new --jsonArray --file=/assets/YouTubeDataset_withChannelElapsed.json
 ```
 
+Read more about [mongoimport](https://docs.mongodb.com/database-tools/mongoimport/) here.
+
 ## MongoDB Compass
 
 ### Installation
