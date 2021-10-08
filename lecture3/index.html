@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Lecture 3</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="../reveal.js/dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 32px;
+        }
+
+        #compareTable {
+            font-size: 30px;
+        }
+
+        .source {
+            font-size: 20px;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .reveal .row {
+            display: flex;
+            /*justify-content: space-between;*/
+            /*justify-content: center;*/
+            /*align-content: center;*/
+        }
+
+        .row > * {
+            height: 40vh;
+            flex-grow: 1;
+        }
+
+        .row img {
+            max-height: 100%;
+            min-width: 100%;
+            object-fit: cover;
+            vertical-align: center;
+        }
+
+        ul.row {
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>
+                MongoDB Aggregations framework
+            </h1>
+        </section>
+        <section>
+            <h2>What is aggregations in MongoDB</h2>
+            <p>
+                MongoDB aggregations allows you to process data records and return computed results.
+            </p>
+        </section>
+        <section>
+            <h2>Aggregations syntax</h2>
+            <pre><code>
+                db.collection.aggregate(pipeline, options)
+            </code></pre>
+        </section>
+        <section>
+            <h2>What is pipeline</h2>
+            <p>Aggregation pipeline is a sequence of stages that will be applied to the collection to obtain the desired result</p>
+            <img src="./images/pipeline.png" alt="Pipeline visualization">
+        </section>
+
+        <section data-auto-animate>
+            <h2>Pipeline example</h2>
+            <pre data-id="code-animation"><code data-trim data-line-numbers>
+db.orders.aggregate([
+   { stage1 },
+   { stage2 },
+   { stage3 },
+   ...
+])
+            </code></pre>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Pipeline example</h2>
+
+            <pre data-id="code-animation"><code data-trim data-line-numbers>
+db.orders.aggregate([
+   { $stage_name: { args } },
+])
+            </code></pre>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Pipeline example</h2>
+
+            <pre data-id="code-animation"><code data-trim data-line-numbers>
+db.orders.aggregate([
+   { $match: { status: "A" } },
+])
+            </code></pre>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Pipeline example</h2>
+
+            <pre data-id="code-animation"><code data-trim data-line-numbers>
+db.orders.aggregate([
+   { $match: { status: "A" } },
+   { $group: { _id: "$cust_id", total: { $sum: "$amount" } } }
+])
+            </code></pre>
+        </section>
+
+        <section data-auto-animate>
+            <h2>Result</h2>
+            <img class="bg-white" src="./images/pipeline_result.png" alt="Example pipeline result">
+        </section>
+
+        <section data-auto-animate>
+            <section>
+                <h2>Most commonly used stages</h2>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/" rel="noreferrer noopener" target="_blank">Docs for all available stages</a></p>
+            </section>
+
+            <section>
+                <h3>$match</h3>
+                <p>Filters the documents to pass only the documents that match the specified condition(s) to the next pipeline stage.</p>
+                <pre><code>{ $match: { &lt;query&gt; } }</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/match/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+
+            <section>
+                <h3>$sort</h3>
+                <p>Sorts all input documents and returns them to the pipeline in sorted order.</p>
+                <pre class="shell"><code>{ $sort: { &lt;field1&gt;: &lt;sort order&gt;, &lt;field2&gt;: &lt;sort order&gt; ... } }</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/sort/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+
+            </section>
+
+            <section>
+                <h3>$project</h3>
+                <p>Passes along the documents with the requested fields to the next stage in the pipeline. The specified fields can be existing fields from the input documents or newly computed fields.</p>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/project/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+
+            <section>
+                <h3>$limit</h3>
+                <p>Limits the number of documents passed to the next stage in the pipeline.</p>
+                <pre class="shell"><code>{ $limit: &lt;positive 64-bit integer&gt; }</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/limit/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+
+            <section>
+                <h3>$skip</h3>
+                <p>Skips over the specified number of documents that pass into the stage and passes the remaining documents to the next stage in the pipeline.</p>
+                <pre class="shell"><code>{ $skip: &lt;positive 64-bit integer&gt; }</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/skip/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+
+            <section>
+                <h3>$group</h3>
+                <p>Groups input documents by the specified _id expression and for each distinct grouping, outputs a document.</p>
+                <pre class="shell"><code>{
+  $group:
+    {
+      _id: &lt;expression&gt;, // Group By Expression
+      &lt;field1&gt;: { &lt;accumulator1&gt; : &lt;expression1&gt; },
+      ...
+    }
+ }</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/group/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+
+            <section>
+                <h3>$lookup</h3>
+                <p>To each input document, the $lookup stage adds a new array field whose elements are the matching documents from the "joined" collection.</p>
+                <pre class="shell"><code>{
+   $lookup:
+     {
+       from: &lt;collection to join&gt;,
+       localField: &lt;field from the input documents&gt;,
+       foreignField: &lt;field from the documents of the "from" collection&gt;,
+       as: &lt;output array field&gt;
+     }
+}</code></pre>
+                <p class="source"><a href="https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+            </section>
+        </section>
+
+        <section>
+            <h2>Views</h2>
+            <p>
+                A MongoDB view is a queryable object whose contents are defined by an aggregation pipeline on other collections or views. MongoDB does not persist the view contents to disk. A view's content is computed on-demand when a client queries the view.
+            </p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/core/views/" rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+    </div>
+</div>
+
+<script src="../reveal.js/dist/reveal.js"></script>
+<script src="../reveal.js/plugin/zoom/zoom.js"></script>
+<script src="../reveal.js/plugin/notes/notes.js"></script>
+<script src="../reveal.js/plugin/search/search.js"></script>
+<script src="../reveal.js/plugin/markdown/markdown.js"></script>
+<script src="../reveal.js/plugin/highlight/highlight.js"></script>
+<script>
+
+    // Also available as an ES module, see:
+    // https://revealjs.com/initialization/
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        slideNumber: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight]
+    });
+
+</script>
+
+</body>
+</html>
