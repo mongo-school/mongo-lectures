@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Lecture 5</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="../reveal.js/dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 32px;
+        }
+
+        #compareTable {
+            font-size: 30px;
+        }
+
+        .source {
+            font-size: 20px;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .reveal .row {
+            display: flex;
+            /*justify-content: space-between;*/
+            /*justify-content: center;*/
+            /*align-content: center;*/
+        }
+
+        .row > * {
+            height: 40vh;
+            flex-grow: 1;
+        }
+
+        .row img {
+            max-height: 100%;
+            min-width: 100%;
+            object-fit: cover;
+            vertical-align: center;
+        }
+
+        ul.row {
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>
+                MongoDB indexes
+            </h1>
+        </section>
+
+        <section>
+            <h2>Why are indexes needed</h2>
+            <p>In short: they help us improve queries performance (both in memory and in time).</p>
+            <p>Without indexes, MongoDB must perform a collection scan, i.e. scan every document in a collection, to select those documents that match the query statement.</p>
+        </section>
+
+        <section>
+            <h2>What is index</h2>
+            <p>Index is a special data structure (B-tree) that store a small portion of the collection's data set in an easy to traverse form.</p>
+        </section>
+
+        <section>
+            <img src="./assets/index-for-sort.bakedsvg.svg" alt="" class="bg-white">
+        </section>
+
+        <section>
+            <h2>Creating indexes</h2>
+            <pre><code>db.collection.createIndex( &lt;key and index type specification&gt;, &lt;options&gt; )</code></pre>
+
+            <pre><code>db.collection.createIndex( { name: -1 } )</code></pre>
+        </section>
+
+        <section>
+            <section>
+                <h2>Index Types</h2>
+            </section>
+
+            <section>
+                <h3>Single Field</h3>
+                <img src="./assets/index-ascending.bakedsvg.svg" alt="" class="bg-white">
+                <pre><code>db.collection.createIndex( { score: 1 } )</code></pre>
+            </section>
+
+            <section>
+                <h3>Compound Index</h3>
+                <img src="./assets/index-compound-key.bakedsvg.svg" alt="" class="bg-white">
+                <pre><code>db.collection.createIndex( { userid: 1, score: -1 } )</code></pre>
+            </section>
+
+            <section>
+                <h3>Multikey Index</h3>
+                <img src="./assets/index-multikey.bakedsvg.svg" alt="" class="bg-white">
+                <pre><code>db.collection.createIndex( { "addr.zip": 1 } )</code></pre>
+            </section>
+
+            <section>
+                <h3>Text indexes</h3>
+                <p>MongoDB provides text indexes to support text search queries on string content. text indexes can include any field whose value is a string or an array of string elements.</p>
+                <pre><code>db.reviews.createIndex( { comments: "text" } )</code></pre>
+            </section>
+        </section>
+
+        <section>
+            <section>
+                <h2>Index properties</h2>
+            </section>
+
+            <section>
+                <h3>Name</h3>
+                <p>The default name for an index is the concatenation of the indexed keys and each key's direction in the index ( i.e. 1 or -1) using underscores as a separator.</p>
+                <pre><code>db.products.createIndex(
+  { item: 1, quantity: -1 } ,
+  { name: "query for inventory" }
+)</code></pre>
+            </section>
+
+            <section>
+                <h3>Unique Indexes</h3>
+                <p>A unique index ensures that the indexed fields do not store duplicate values; i.e. enforces uniqueness for the indexed fields. By default, MongoDB creates a unique index on the _id field during the creation of a collection.</p>
+                <pre><code>db.collection.createIndex( &lt;key and index type specification&gt;, { unique: true } )</code></pre>
+            </section>
+
+            <section>
+                <h3>Partial Indexes</h3>
+                <p>Partial indexes only index the documents in a collection that meet a specified filter expression. By indexing a subset of the documents in a collection, partial indexes have lower storage requirements and reduced performance costs for index creation and maintenance.</p>
+                <pre><code>db.restaurants.createIndex(
+   { cuisine: 1, name: 1 },
+   { partialFilterExpression: { rating: { $gt: 5 } } }
+)</code></pre>
+            </section>
+
+            <section>
+                <h3>Sparse Indexes</h3>
+                <p>Sparse indexes only contain entries for documents that have the indexed field, even if the index field contains a null value. The index skips over any document that is missing the indexed field. The index is "sparse" because it does not include all documents of a collection</p>
+                <pre><code>db.addresses.createIndex( { "xmpp_id": 1 }, { sparse: true } )</code></pre>
+            </section>
+
+            <section>
+                <h3>TTL Indexes</h3>
+                <p>TTL indexes are special indexes that MongoDB can use to automatically remove documents from a collection after a certain amount of time. This is ideal for certain types of information like machine generated event data, logs, and session information that only need to persist in a database for a finite amount of time.</p>
+                <pre><code>db.eventlog.createIndex( { "lastModifiedDate": 1 }, { expireAfterSeconds: 3600 } )</code></pre>
+            </section>
+
+            <section>
+                <h3>Hidden Indexes</h3>
+                <p>Hidden indexes are not visible to the query planner and cannot be used to support a query.</p>
+                <p>By hiding an index from the planner, users can evaluate the potential impact of dropping an index without actually dropping the index. </p>
+                <pre><code>db.addresses.createIndex(
+   { borough: 1 },
+   { hidden: true }
+);</code></pre>
+                <pre><code>db.restaurants.hideIndex( "borough_1_ratings_1" )</code></pre>
+                <pre><code>db.restaurants.unhideIndex( "borough_1_ratings_1" ); </code></pre>
+            </section>
+        </section>
+    </div>
+</div>
+
+<script src="../reveal.js/dist/reveal.js"></script>
+<script src="../reveal.js/plugin/zoom/zoom.js"></script>
+<script src="../reveal.js/plugin/notes/notes.js"></script>
+<script src="../reveal.js/plugin/search/search.js"></script>
+<script src="../reveal.js/plugin/markdown/markdown.js"></script>
+<script src="../reveal.js/plugin/highlight/highlight.js"></script>
+<script>
+
+    // Also available as an ES module, see:
+    // https://revealjs.com/initialization/
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        slideNumber: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight]
+    });
+
+</script>
+
+</body>
+</html>
