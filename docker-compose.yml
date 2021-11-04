@@ -7,6 +7,8 @@ services:
       - mongodata:/data/db
       - mongo-config:/data/configdb
       - ./assets:/assets # directory with asset files, to be imported to MongoDB with mongoimport command
+    command:
+      - --auth
     ports:
       - "27017:27017"
 

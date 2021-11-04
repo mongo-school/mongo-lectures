@@ -68,8 +68,211 @@
     <div class="slides">
         <section>
             <h1>
-                MongoDB security
+                MongoDB Authentication
             </h1>
+        </section>
+
+        <section><h2>Access control and authentication</h2></section>
+
+        <section>
+            <h2>What is Authentication</h2>
+            <p>
+                Authentication is the process of verifying the identity of a client.
+                When access control (authorization) is enabled, MongoDB requires all clients to authenticate
+                themselves in order to determine their access.
+            </p>
+        </section>
+
+        <section>
+            <h2>Authentication vs Authorization</h2>
+            <ul>
+                <li>Authentication verifies the identity of a user.</li>
+                <li>Authorization determines the verified user's access to resources and operations.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Authentication Mechanisms</h2>
+
+            <ul>
+                <li class="fragment">Salted Challenge Response Authentication Mechanism (SCRAM) Authentication</li>
+                <li class="fragment">x.509 Certificate Authentication</li>
+                <li class="fragment">Kerberos Authentication (Enterprise Only)</li>
+                <li class="fragment">LDAP Authentication (Enterprise Only)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Getting all users</h2>
+            <code>db.getUsers()</code>
+            <p>
+                Returns information for all the users in the database.
+            </p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/method/db.getUsers"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>Creating user</h2>
+            <code>db.createUser()</code>
+            <p>Creates a new user for the database on which the method is run. db.createUser() returns a duplicate user
+                error if the user already exists on the database.</p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/method/db.createUser"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>
+                Enabling access-control
+            </h2>
+            <ul>
+                <li>Run mongod with --auth option:
+                    <pre><code>mongod --auth --port 27017 --dbpath /var/lib/mongodb</code></pre>
+                </li>
+                <li>
+                    If you start the mongod using a configuration file, add the security.authorization configuration
+                    file setting:
+                    <pre><code>security:
+    authorization: enabled</code></pre>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MongoDB configuration file</h2>
+            <p>
+                You can configure MongoDB instances at startup using a configuration file.
+            </p>
+            <p class="source"><a href="https://github.com/mongodb/mongo/blob/master/debian/mongod.conf"
+                                 rel="noreferrer noopener" target="_blank">File example</a></p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/configuration-options/"
+                                 rel="noreferrer noopener" target="_blank">Configuration options</a></p>
+        </section>
+
+        <section>
+            <h2>
+                Authenticate after Connecting to the Shell
+            </h2>
+            <pre><code>use admin
+db.auth( "admin", passwordPrompt() )</code></pre>
+        </section>
+
+        <section>
+            <h2>Authenticate when Connecting to the Shell</h2>
+            <pre><code>mongosh --username "admin" --password --authenticationDatabase admin</code></pre>
+        </section>
+
+        <section>
+            <h2>Connect and authenticate with URI</h2>
+            <p>
+                MongoDB URI format:
+            </p>
+            <pre><code>mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]</code></pre>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/connection-string/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+
+            <p>Connect via mongosh with URI:</p>
+            <pre><code>mongosh "mongodb://admin:secret@localhost:27017"</code></pre>
+
+            <p class="source"><a href="https://docs.mongodb.com/mongodb-shell/connect/#std-label-mdb-shell-connect"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>Role-Based Access Control</h2>
+            <p>MongoDB employs Role-Based Access Control (RBAC) to govern access to a MongoDB system. A user is granted
+                one or more roles that determine the user's access to database resources and operations</p>
+        </section>
+
+
+        <section>
+            <h2>What is role</h2>
+
+            <p>
+                Role is a set of <i>privileges</i>.
+            </p>
+            <p>
+                Each privilege consists of an <i>action</i> (such as creating new documents, retrieving data from a
+                document, or creating and deleting users) and the <i>resource</i> on which that action can be performed
+                (such as a database named reports or a collection called orders).
+            </p>
+        </section>
+
+
+        <section>
+            <h2>Built-In Roles</h2>
+            <p>MongoDB provides built-in roles that provide the different levels of access commonly needed in a database
+                system</p>
+
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/built-in-roles/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>User-Defined Roles</h2>
+            <p>MongoDB provides a number of built-in roles. However, if these roles cannot describe the desired set of
+                privileges, you can create new roles.</p>
+        </section>
+
+        <section>
+            <h2>Creating role</h2>
+
+            <pre><code>db.createRole({
+  role: "&lt;name&gt;",
+  privileges: [
+     { resource: { &lt;resource&gt; }, actions: [ "&lt;action&gt;", ... ] },
+     ...
+  ],
+  roles: [
+     { role: "&lt;role&gt;", db: "&lt;database&gt;" } | "&lt;role&gt;",
+      ...
+  ],
+  authenticationRestrictions: [
+    {
+      clientSource: ["&lt;IP&gt;" | "&lt;CIDR range&gt;", ...],
+      serverAddress: ["&lt;IP&gt;" | "&lt;CIDR range&gt;", ...]
+    },
+    ...
+  ]
+})</code></pre>
+            <p class="source"><a
+                    href="https://docs.mongodb.com/manual/reference/method/db.createRole/#mongodb-method-db.createRole"
+                    rel="noreferrer noopener" target="_blank">Docs</a></p>
+
+        </section>
+
+
+        <section>
+            <h2>Resources</h2>
+            <p>The resource document specifies the resources upon which a privilege permits actions.</p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/resource-document/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+
+        <section>
+            <h2>Privilege Actions</h2>
+            <p>Privilege actions define the operations a user can perform on a resource.</p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/privilege-actions/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>Localhost Exception</h2>
+            <p>The localhost exception allows you to enable access control and then create the first user or role in the
+                system. After you enable access control, connect to the localhost interface and create the first user in
+                the admin database.</p>
+            <p>
+                To do this, you need to:
+
+            <ul>
+                <li>Enable access control</li>
+                <li>Connect to the localhost interface</li>
+                <li>Create the first user in the admin database that must have enough permissions to manage other users and roles.</li>
+            </ul>
+            </p>
+            <p class="source"><a href="https://docs.mongodb.com/manual/core/localhost-exception/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
         </section>
     </div>
 </div>
