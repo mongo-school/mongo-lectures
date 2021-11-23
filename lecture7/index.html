@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Lecture 6</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="../reveal.js/dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --r-main-font-size: 32px;
+        }
+
+        #compareTable {
+            font-size: 30px;
+        }
+
+        .source {
+            font-size: 20px;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .reveal .row {
+            display: flex;
+            /*justify-content: space-between;*/
+            /*justify-content: center;*/
+            /*align-content: center;*/
+        }
+
+        .row > * {
+            height: 40vh;
+            flex-grow: 1;
+        }
+
+        .row img {
+            max-height: 100%;
+            min-width: 100%;
+            object-fit: cover;
+            vertical-align: center;
+        }
+
+        ul.row {
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>
+                MongoDB replication and sharding
+            </h1>
+        </section>
+
+        <section>
+            <h2>What is replication</h2>
+
+            <p>Process of data synchronization between MongoDB instances</p>
+        </section>
+
+        <section>
+            <h2>Why Replication?</h2>
+
+            <ul>
+                <li>Data redundancy</li>
+                <li>High availability</li>
+                <li>Easier recovering from hardware failure and service interruptions</li>
+                <li>Read scaling</li>
+                <li>Easier backuping and maintenance</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What is replica set</h2>
+            <p>A replica set in MongoDB is a group of mongod processes that maintain the same data set.</p>
+        </section>
+
+        <section>
+            <h2>How does replication work</h2>
+
+            <p><img class="bg-white" src="./assets/replica-set-read-write-operations-primary.bakedsvg.svg"
+                    alt="Replication scheme"></p>
+        </section>
+
+        <section>
+            <section>
+                <h2>Replica set members</h2>
+            </section>
+
+            <section>
+                <h2>Primary</h2>
+
+                <p>
+                    The primary is the only member in the replica set that receives write operations. MongoDB applies
+                    write operations on the primary and then records the operations on the primary's oplog. Secondary
+                    members replicate this log and apply the operations to their data sets.
+                </p>
+            </section>
+
+            <section>
+                <h2>Secondary</h2>
+
+                <p>A secondary maintains a copy of the primary's data set. To replicate data, a secondary applies
+                    operations from the primary's oplog to its own data set in an asynchronous process. </p>
+            </section>
+
+            <section>
+                <h2>Arbiter</h2>
+                <p>In some circumstances (such as you have a primary and a secondary but cost constraints prohibit
+                    adding another secondary), you may choose to add an arbiter to your replica set. An arbiter does not
+                    have a copy of the data set and cannot become a primary. However, an arbiter participates in
+                    elections for primary.</p>
+            </section>
+        </section>
+
+        <section>
+            <h2>Heartbeat</h2>
+
+            <p>
+                Heartbeat is the process that identifies the current status of a MongoDB node in a replica set.
+            </p>
+        </section>
+
+        <section>
+            <h2>Replica Set Elections</h2>
+            <p>
+                Replica sets use elections to determine which set member will become primary. Replica sets can trigger
+                an
+                election in response to a variety of events, such as:
+            </p>
+            <ul>
+                <li>Adding a new node to the replica set</li>
+                <li>initiating a replica set</li>
+                <li>performing replica set maintenance using methods such as rs.stepDown() or rs.reconfig()</li>
+                <li>the secondary members losing connectivity to the primary for more than the configured timeout (10
+                    seconds by default).
+                </li>
+            </ul>
+        </section>
+
+        <section><img class="bg-white" src="./assets/replica-set-trigger-election.bakedsvg.svg" alt=""></section>
+
+        <section>
+            <h2>Fault tolerance</h2>
+
+            <p>
+                Fault tolerance for a replica set is the number of members that can become unavailable and still leave enough members in the set to elect a primary.
+            </p>
+
+            <img src="./assets/fault-tolerance.png" alt="">
+        </section>
+
+        <section>
+            <h2>Arbiter</h2>
+
+            <img class="bg-white" src="./assets/replica-set-primary-with-secondary-and-arbiter.bakedsvg.svg" alt="">
+        </section>
+
+        <section>
+            <h2>Member priority</h2>
+            <p>The priority settings of replica set members affect both the timing and the outcome of elections for primary.</p>
+        </section>
+
+        <section>
+            <h2>Replica set methods</h2>
+            <p class="source"><a href="https://docs.mongodb.com/manual/reference/method/js-replication/"
+                                 rel="noreferrer noopener" target="_blank">Docs</a></p>
+        </section>
+
+        <section>
+            <h2>Sharding</h2>
+        </section>
+
+        <section>
+            <h2>What is sharding</h2>
+
+            <p>Sharding is a method for distributing data across multiple machines. MongoDB uses sharding to support deployments with very large data sets and high throughput operations.</p>
+
+            <img src="./assets/sharding.jpeg" alt="">
+        </section>
+
+        <section>
+            <h2>Why sharding?</h2>
+
+            <ul>
+                <li>Horizontal scaling</li>
+                <li>Increased Read/Write Throughput</li>
+                <li>Increased Storage Capacity</li>
+                <li>High Availability</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Vertical vs horizontal scaling</h2>
+
+            <img src="./assets/horizontal-vs-vertical-scaling.webp" alt="">
+        </section>
+
+        <section>
+            <h2>Disadvantages of Sharding</h2>
+
+            <ul>
+                <li>Query Overhead</li>
+                <li>Complexity of Administration</li>
+                <li>Increased Infrastructure Costs</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Cluster members</h2>
+
+            <ul>
+                <li>Shard: Each shard contains a subset of the sharded data. Each shard can be deployed as a replica set to provide redundancy and high availability. Together, the cluster’s shards hold the entire data set for the cluster.</li>
+                <li>Router: The <code>mongos</code> acts as a query router, providing an interface between client applications and the sharded cluster.</li>
+                <li>Config Servers: Config servers store metadata and configuration settings for the cluster. They are also deployed as a replica set.</li>
+            </ul>
+        </section>
+
+        <section>
+            <img class="bg-white" src="./assets/sharded-cluster-production-architecture.bakedsvg.svg" alt="">
+        </section>
+
+        <section>
+            <h2>Shard key</h2>
+<p>The shard key is either a single indexed field or multiple fields covered by a compound index that determines the distribution of the collection's documents among the cluster's shards.</p>
+            <img class="bg-white" src="./assets/sharding-range-based.bakedsvg-2.svg" alt="">
+        </section>
+    </div>
+</div>
+
+<script src="../reveal.js/dist/reveal.js"></script>
+<script src="../reveal.js/plugin/zoom/zoom.js"></script>
+<script src="../reveal.js/plugin/notes/notes.js"></script>
+<script src="../reveal.js/plugin/search/search.js"></script>
+<script src="../reveal.js/plugin/markdown/markdown.js"></script>
+<script src="../reveal.js/plugin/highlight/highlight.js"></script>
+<script>
+
+    // Also available as an ES module, see:
+    // https://revealjs.com/initialization/
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        slideNumber: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight]
+    });
+
+</script>
+
+</body>
+</html>
